@@ -22,17 +22,23 @@ def reshape(array, dim):
         
     return array
     
-def geometricBM (n, dim, T, S0, r, mi, sigma, pho):
+def geometricBM (n, dim, T, S0, r, delta, sigma, pho):
     '''
     This function will simulate a geometric BM
+    
+    S0 -> initial Value
+    r -> risk free interest rate
+    delta -> dividends yields
+    sigma -> volatility
+    pho -> Brownian Motion correlations
     '''
-    mi = reshape(mi, dim)
+    delta = reshape(delta, dim)
     sigma = reshape(sigma, dim)
     S0 = reshape(S0, dim)
         
     Tp = np.arange(0, T, T/n)*np.ones((dim,n))
     
-    mt = r - mi - sigma**2/2
+    mt = r - delta - sigma**2/2
     
     ms = sigma*sigma.transpose()
     Pho = pho*np.ones((dim, dim)) - (pho-1)*np.diag(np.ones(dim))
