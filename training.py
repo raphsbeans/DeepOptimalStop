@@ -33,7 +33,6 @@ def payoff (tau, x, K = K, T = T, n=n, r=r):
     The payoff of the option
     Tau will be one of the positions in the array of x
     '''
-    print(tau)
     P = tf.math.reduce_max(x, axis = 0) - K
     I = tf.math.greater(P[tau],0)
     
@@ -51,11 +50,11 @@ class model:
     
     def __init__(self):
         #xavier=tf.keras.initializers.GlorotUniform()
-        self.l1=tf.keras.layers.Dense(64,activation=tf.nn.relu,input_shape=[2,10], dtype = tf.float64)
-        self.l2=tf.keras.layers.Dense(64,activation=tf.nn.relu, dtype = tf.float64)
+        self.l1=tf.keras.layers.Dense(2,activation=tf.nn.relu,input_shape=[1000,2,10], dtype = tf.float64)
+        self.l2=tf.keras.layers.Dense(1,activation=tf.nn.relu, dtype = tf.float64)
         self.out=tf.keras.layers.Dense(1,activation = tf.nn.sigmoid, dtype = tf.float64)
         self.train_op = tf.keras.optimizers.Adagrad(0.1)
-        
+        self.dim = 1000
     # Running the model
     def run(self,X): 
         boom=self.l1(X)
@@ -69,7 +68,10 @@ class model:
         boom=self.l1(X)
         boom1=self.l2(boom)
         boom2=self.out(boom1)
-        return payoff(n-1,X)* boom2 + payoff(n,X)*(1-boom2)
+        r = 0
+        for i in range(self.dim):
+            r += payoff(n-1,X[i])* boom2 + payoff(n,X[i])*(1-boom2)
+        return r/self.dim
       
     # get gradients
     def get_grad(self,X):
@@ -84,10 +86,13 @@ class model:
     # perform gradient descent
     def network_learn(self,X):
         g = self.get_grad(X)
+        print(g)
+        print(self.l2.variables[0])
+        print(self.l2.variables[1])
         self.train_op.apply_gradients(zip(g, [self.l1.variables[0],self.l1.variables[1],self.l2.variables[0],self.l2.variables[1],self.out.variables[0],self.out.variables[1]]))
         
         
 model_test = model()
-for i in range(len(X)):
-    input_nn = tf.Variable(X[i], name = 'x')
-    model_test.network_learn(input_nn)
+
+input_nn = tf.Variable(X, name = 'x')
+model_test.network_learn(input_nn)
