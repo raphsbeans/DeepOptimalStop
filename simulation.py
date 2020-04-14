@@ -4,7 +4,6 @@ This script will create simulations of our variables
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 def multiBrownian(n, dim, T):
     '''
@@ -50,5 +49,18 @@ def geometricBM (n, dim, T, S0, r, delta, sigma, pho):
     
     return S0 * np.exp(mt * Tp + np.matmul(ms, Z))
     
-g = geometricBM (1024, 32, 1, 5, 0.4, 1, 0.1, 3/5)
+def simulate_x (M, n, dim, T, S0, r, delta, sigma, pho):
+    '''
+    This function will generate M copies of the geometric BM of dimension dim 
+    and time step T/n
+    
+    S0 -> initial Value
+    r -> risk free interest rate
+    delta -> dividends yields
+    sigma -> volatility
+    pho -> Brownian Motion correlations
+    '''
+    return np.array([geometricBM (n, dim, T, S0, r, delta, sigma, pho) \
+                     for i in range(M)])
+    
 
