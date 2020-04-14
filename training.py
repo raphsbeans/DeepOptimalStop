@@ -71,7 +71,7 @@ class model:
         r = 0
         for i in range(self.dim):
             r += payoff(n-1,X[i])* boom2 + payoff(n,X[i])*(1-boom2)
-        return r/self.dim
+        return -r/self.dim
       
     # get gradients
     def get_grad(self,X):
